@@ -83,6 +83,9 @@ public class CastPlayerWrapper {
             if (mediaItem.mediaMetadata.subtitle != null) {
                 metadata.putString(CastMediaMetadata.KEY_SUBTITLE, mediaItem.mediaMetadata.subtitle.toString());
             }
+            if (mediaItem.mediaMetadata.artist != null) {
+                metadata.putString(CastMediaMetadata.KEY_ARTIST, mediaItem.mediaMetadata.artist.toString());
+            }
             if (mediaItem.mediaMetadata.artworkUri != null) {
                 metadata.addImage(new WebImage(mediaItem.mediaMetadata.artworkUri));
             }
@@ -127,6 +130,9 @@ public class CastPlayerWrapper {
             }
             if (castMetadata.containsKey(CastMediaMetadata.KEY_SUBTITLE)) {
                 metadataBuilder.setSubtitle(castMetadata.getString(CastMediaMetadata.KEY_SUBTITLE));
+            }
+            if (castMetadata.containsKey(CastMediaMetadata.KEY_ARTIST)) {
+                metadataBuilder.setArtist(castMetadata.getString(CastMediaMetadata.KEY_ARTIST));
             }
             if (!castMetadata.getImages().isEmpty()) {
                 metadataBuilder.setArtworkUri(castMetadata.getImages().get(0).getUrl());
