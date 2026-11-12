@@ -1,8 +1,10 @@
 package de.danoeh.antennapod.ui.chapters;
 
 import static org.junit.Assert.assertEquals;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -11,9 +13,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import de.danoeh.antennapod.model.feed.Chapter;
+import de.danoeh.antennapod.model.feed.Feed;
+import de.danoeh.antennapod.model.feed.FeedItem;
 import de.danoeh.antennapod.model.feed.FeedMedia;
 import de.danoeh.antennapod.parser.media.MediaFormatDetector;
 
@@ -203,6 +208,23 @@ public class ChapterUtilsTest {
 
         assertEquals(4, chapters.size());
         assertEquals(0, chapters.get(0).getStart());
+        assertEquals("Chapter 1 - ❤️😊", chapters.get(0).getTitle());
+    }
+
+    @Test
+    public void testLoadChaptersFromMediaFile_localFeedContentUri_readsChapters() throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
+        Uri uri = Uri.parse("content://com.example.documents/auphonic.mp3");
+        shadowOf(context.getContentResolver()).registerInputStreamSupplier(uri,
+                () -> getClass().getClassLoader().getResourceAsStream("auphonic.mp3"));
+
+        Feed feed = new Feed(Feed.PREFIX_LOCAL_FOLDER + "content://com.example.documents", null);
+        FeedItem item = new FeedItem(1, "Episode", "id", "auphonic.mp3", new Date(), FeedItem.UNPLAYED, feed);
+        FeedMedia media = new FeedMedia(1, item, 0, 0, 0, "audio/mpeg",
+                uri.toString(), uri.toString(), 0, null, 0, 0);
+        List<Chapter> chapters = ChapterUtils.loadChaptersFromMediaFile(media, context);
+
+        assertEquals(4, chapters.size());
         assertEquals("Chapter 1 - ❤️😊", chapters.get(0).getTitle());
     }
 
